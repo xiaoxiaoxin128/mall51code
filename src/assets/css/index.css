@@ -1,0 +1,7 @@
+/* 设置login样式操作 */
+/* 然后去main.js中去配置引入路径 */
+html,body,h2{
+    padding: 0;
+    margin: 0;
+    height: 100%;
+}
