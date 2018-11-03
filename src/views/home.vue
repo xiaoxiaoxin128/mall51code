@@ -85,7 +85,10 @@
                 </el-submenu>
             </el-menu>
         </el-aside>
-        <el-main class="main">Main</el-main>
+        <el-main class="main">
+            <!-- 设置一个用户列表的容器 -->
+            <router-view></router-view>
+        </el-main>
     </el-container>
 </el-container>
 </template>
@@ -110,17 +113,17 @@ export default {
   // 判断用户token是否存在,登录进行/home的页面的渲染
   // !token的  回到login页面
   // 操作退出的方法添加
-methods:{
-   loginout() {
-        // 1.清除session
-        sessionStorage.clear()
-        // 2.跳转  
-        this.$router.push({name: 'login'})
-        // 3.提示
-        this.$message.success('退出成功')
+  methods: {
+    loginout () {
+      // 1.清除session
+      sessionStorage.clear()
+      // 2.跳转
+      this.$router.push({name: 'login'})
+      // 3.提示
+      this.$message.success('退出成功')
     }
-   }
- }
+  }
+}
 </script>
 
 <style>
@@ -158,4 +161,5 @@ methods:{
 .menu {
   height: 100%;
 }
+/* // 操作完成后  新建一个用户列表页 */
 </style>
