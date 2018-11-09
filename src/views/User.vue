@@ -105,7 +105,7 @@
         <el-table-column type="index" label='#' width='80'>
         </el-table-column>
 
-        <el-table-column prop="username" label='姓名' width="100">
+        <el-table-column prop="username" label='姓名' width="150">
         </el-table-column>
 
         <el-table-column prop="email" label='邮箱' width="150">
@@ -156,224 +156,225 @@
 
 <script>
 export default {
-  data () {
+  data() {
     return {
       // 值为一个空数组用于下面的ueses赋值给list
       list: [],
       loading: false,
       // 分页数据相关变量声明
+
       currentPage: 1,
       // 条数
       pagesize: 2,
       // 多少页
-      pagenum: 4,
+      pagenum: 1,
       // 总数的声明再到下面去定义获取总数的条数
       total: 0,
       // 查询关键字搜索操作器methods中设置发送请求
-      searchVal: '',
+      searchVal: "",
       // 添加用户的对话框操作
       dialogFormVisibleAdduser: false,
       // 需要请求的表单数据
       formData: {
-        username: '',
-        password: '',
-        email: '',
-        mobile: ''
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
       },
       // 对话框中input的宽度
-      formLabelWidth: '120px',
+      formLabelWidth: "120px",
       // 编辑用户对话框属性
       dialogFormVisibleEdituser: false,
       // 分配权限操作
       dialogFormVisibleSetrole: false,
       // 当前用户名
-      currUserName: '',
+      currUserName: "",
       currRoleId: -1,
       // 获取所有角色(主管/测试)
       roles: [],
       // 用户ID
       currUserId: -1
-    }
+    };
   },
   // 调用方法数据
-  created () {
-    this.loadTableData()
+  created() {
+    this.loadTableData();
   },
 
   // 获取数据的数据操作异步的操作async
   methods: {
     // 分配请求权限-发送请求
 
-    async setRole () {
+    async setRole() {
       // 发送请求标识users/id/role
       const res = await this.$http.put(`users/${this.currUserId}/role`, {
         rid: this.currRoleId
-      })
+      });
       const {
         meta: { status, msg }
-      } = res.data
+      } = res.data;
       // 提示框
-      this.$message.success(msg)
+      this.$message.success(msg);
       // 关闭对话框
-      this.dialogFormVisibleSetrole = false
+      this.dialogFormVisibleSetrole = false;
       // 重置
-      this.currRoleId = -1
+      this.currRoleId = -1;
     },
     // 分配权限 显示对话框 操作上面配置
     async showRoleBox(user) {
-    // 获取用户的id
-      this.currUserId = user.id
+      // 获取用户的id
+      this.currUserId = user.id;
 
-      this.currUserName = user.username
+      this.currUserName = user.username;
       // 显示分配权限框
-      this.dialogFormVisibleSetrole = true
-      const res = await this.$http.get('roles')
-      this.roles = res.data.data
+      this.dialogFormVisibleSetrole = true;
+      const res = await this.$http.get("roles");
+      this.roles = res.data.data;
 
-      const res2 = await this.$http.get(`users/${user.id}`)
-      this.currRoleId = res2.data.data.rid
+      const res2 = await this.$http.get(`users/${user.id}`);
+      this.currRoleId = res2.data.data.rid;
     },
     // 编辑用户,点击确定提交修改的表单
-    async editUser () {
+    async editUser() {
       // 关闭隐藏对话框
-      this.dialogFormVisibleEdituser = false
+      this.dialogFormVisibleEdituser = false;
       // 发送请求put
       const res = await this.$http.put(
         `users/${this.formData.id}`,
         this.formData
-      )
+      );
       // 刷新视图
-      this.loadTableData()
+      this.loadTableData();
       // 提示
-      this.$message.success(res.data.meta.msg)
+      this.$message.success(res.data.meta.msg);
     },
     // 编辑按钮显示对话框的操作
-    async showEditBox (userId) {
+    async showEditBox(userId) {
       // 开启显示对话框
-      this.dialogFormVisibleEdituser = true
+      this.dialogFormVisibleEdituser = true;
       // 发送请求
-      const res = await this.$http.get(`users/${userId}`)
+      const res = await this.$http.get(`users/${userId}`);
       // 获得请求的数据进行判断渲染
-      this.formData = res.data.data
+      this.formData = res.data.data;
     },
     // 添加用户的表单请求提交
     async addUser() {
       // 关闭对话框false关闭
-      this.dialogFormVisibleAdduser = false
+      this.dialogFormVisibleAdduser = false;
       // 方法请求获取数据
-      const res = await this.$http.post('users', this.formData)
+      const res = await this.$http.post("users", this.formData);
       const {
         meta: { status, msg }
-      } = res.data
+      } = res.data;
       // 刷新视
-      this.loadTableData()
+      this.loadTableData();
       // 提示框
-      this.$message.success(msg)
+      this.$message.success(msg);
       // 清空表单
-      this.formData = {}
+      this.formData = {};
     },
     // 显示添加用户的方法操作
     showAddUserDia() {
-      this.dialogFormVisibleAdduser = true
+      this.dialogFormVisibleAdduser = true;
     },
     // 显示删除提示框传一个值和与上面的showDateBox交互
-    showDeleBox (userId) {
-      this.$confirm('sure, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
+    showDeleBox(userId) {
+      this.$confirm("sure, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
       })
-        .then(async() => {
+        .then(async () => {
           // 此处删除操作要发送一个请求看接口文档
-          const res = await this.$http.delete(`users/${userId}`)
+          const res = await this.$http.delete(`users/${userId}`);
           const {
             meta: { msg, status }
-          } = res.data
+          } = res.data;
           if (status === 200) {
             // 删除成功刷新类表
-            this.loadTableData()
+            this.loadTableData();
             this.$message({
-              type: 'success',
+              type: "success",
               message: msg
-            })
+            });
           }
         })
         .catch(() => {
           this.$message({
-            type: 'info',
+            type: "info",
             message: msg
-          })
-          console.log(msg)
-        })
+          });
+          console.log(msg);
+        });
     },
     // 通过开关改变用户状态操作
-    async changeSwitchMgstate (user) {
+    async changeSwitchMgstate(user) {
       const res = await this.$http.put(
         `users/${user.id}/state/${user.mg_state}`
-      )
+      );
       // console.log(res)
       const {
         meta: { status, msg }
-      } = res.data
+      } = res.data;
       if (status === 200) {
         // 提示框显示
-        this.$message.success(msg)
+        this.$message.success(msg);
       }
     },
     // 查询用户搜索发送请求的方法
-    checkUser () {
-      this.loadTableData()
+    checkUser() {
+      this.loadTableData();
     },
     // 分页轩相关的方法
-    handleSizeChange (val) {
+    handleSizeChange(val) {
       //  点击当前页发送请求
       // console.log(`每页 ${val} 条`)
-      this.pagesize = val
-      this.loadTableData()
+      this.pagesize = val;
+      this.loadTableData();
     },
-    handleCurrentChange (val) {
-      this.pagenum = val
+    handleCurrentChange(val) {
+      this.pagenum = val;
       // 点击请求将获取数据传给下面的pagenum
-      this.loadTableData()
+      this.loadTableData();
       // console.log(`当前页: ${val}`)
     },
-    async loadTableData () {
+    async loadTableData() {
       // 请求数据之前加载显示加载动画
-      this.loading = true
+      this.loading = true;
       // 除了登录功能, 其他功能的接口都需要加入token 才能请求
       // header添加token
-      const AUTH_TOKEN = sessionStorage.getItem('token')
-      this.$http.defaults.headers.common['Authorization'] = AUTH_TOKEN
+      const AUTH_TOKEN = sessionStorage.getItem("token");
+      this.$http.defaults.headers.common["Authorization"] = AUTH_TOKEN;
       // 查询的价格参数操作,query是查询参数
       const res = await this.$http.get(
         `users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${
           this.searchVal
         }`
-      )
-      console.log(res)
+      );
+      console.log(res);
       // 获取数据的总条数操作赋值
-      this.total = res.data.data.total
+      this.total = res.data.data.total;
       // 结构赋值将获取de数据进行渲然列表
       const {
         meta: { msg, status },
         data: { users }
-      } = res.data
+      } = res.data;
       // 定义的msg必须要点输出一下不然会 报错
-      console.log(msg)
+      console.log(msg);
       if (status === 200) {
         // 数据请求成功之后结束页面加载动画
-        this.loading = false
+        this.loading = false;
         // 列表数组
-        this.list = users
+        this.list = users;
 
         // 重置获取的列表
-        this.pagenum = 1
-        this.pagesize = 2
-        this.currentPage = 1
+        this.pagenum = 1;
+        // this.pagesize = pagesize
+        // this.currentPage = 1
       }
     }
   }
-}
+};
 </script>
 
 <style>

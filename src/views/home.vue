@@ -19,70 +19,36 @@
     <el-container>
         <!-- 左侧的导航栏操作 -->
         <el-aside class="aside" width="200px">
-            <el-menu class="menu" default-active="2" :unique-opened='true' :router='true'>
+            <el-menu class="menu" 
+            :router='true' 
+            :unique-opened='true' 
+            default-active="1">
                 <!-- :此处会报错需要的的是一个布尔值,但是得到的是一个字符串,,要加: -->
                 <!-- :unique-opened=true只保持一个子菜单操作 -->
                 <!-- :router  开启路由模式,设置el-menu-item的index值为路由代替path跳转 -->
-                <el-submenu index="1">
+                <!-- 使用路由守卫操作将每个导航的切换模式进行遍历循环 -->
+                <!-- 报错要是的是字符串但是拿到的是一个数字解决 拼接一个+''就可以 -->
+                <el-submenu 
+                :index="index +''" 
+                v-for="(item1, index) in menus" 
+                :key="index">
+                    <!-- 一级权限的展示 -->
                     <template slot="title">
                         <i class="el-icon-location"></i>
-                        <span>用户管理</span>
+                        <span>{{item1.authName}}</span>
                     </template>
+                    <!-- 二级权限的标识 -->
                     <!-- 此时的index标识代替path跳转 -->
-                    <el-menu-item index="/users">
+                    <el-menu-item 
+                    :index="'/'+item2.path" 
+                    v-for="(item2, index) in item1.children" 
+                    :key="index">
                         <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>用户列表</el-menu-item>
-                </el-submenu>
-                <el-submenu index="2">
-                    <template slot="title">
-                        <i class="el-icon-location"></i>
-                        <span>权限管理</span>
-                    </template>
-                    <!-- 此时的index标识代替path跳转 -->
-                    <el-menu-item index="/role">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>角色列表</el-menu-item>
-                    <!-- 此时的index标识代替path跳转 -->
-                    <el-menu-item index="/right">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>权限列表</el-menu-item>
+                        <i class="el-icon-menu"></i>
+                            {{item2.authName}}
+                    </el-menu-item>
                 </el-submenu>
 
-                <el-submenu index="3">
-                    <template slot="title">
-                        <i class="el-icon-location"></i>
-                        <span>商品管理</span>
-                    </template>
-                    <el-menu-item index="3-1">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>商品列表</el-menu-item>
-                    <el-menu-item index="3-2">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>参数分类</el-menu-item>
-                    <el-menu-item index="3-3">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>商品分类</el-menu-item>
-                </el-submenu>
-
-                <el-submenu index="4">
-                    <template slot="title">
-                        <i class="el-icon-location"></i>
-                        <span>订单管理</span>
-                    </template>
-                    <el-menu-item index="4-1">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>订单管理</el-menu-item>
-                </el-submenu>
-
-                <el-submenu index="5">
-                    <template slot="title">
-                        <i class="el-icon-location"></i>
-                        <span>数据统计</span>
-                    </template>
-                    <el-menu-item index="5-1">
-                        <!-- icon饿了吗自定义图标 -->
-                        <i class="el-icon-menu"></i>数据报表</el-menu-item>
-                </el-submenu>
             </el-menu>
         </el-aside>
         <el-main class="main">
@@ -95,35 +61,52 @@
 
 <script>
 export default {
-  // 设置组件加载之前的操作beforeCreate进行token的验证
-  beforeCreate () {
-    //   从session中获取token的值,判断
-    const token = sessionStorage.getItem('token')
-
-    if (!token) {
-      // token不存在返回login页面
-      this.$router.push('/login.vue')
-      // 提示框
-      this.$message.warning('请先登录')
-    } else this.$message.warning('进入到home页')
-
-    // token存在进行home页面的渲染
-    this.$router.push('/')
+  // 返回一个统一路由守卫配置的空数据请求成功后数据赋值
+  data() {
+    return {
+      menus: []
+    };
   },
-  // 判断用户token是否存在,登录进行/home的页面的渲染
-  // !token的  回到login页面
-  // 操作退出的方法添加
+  // 设置组件加载之前的操作beforeCreate进行token的验证
+  beforeCreate() {
+    //   从session中获取token的值,判断
+    //     const token = sessionStorage.getItem('token')
+    //     if (!token) {
+    //       this.$message.warning('请先登录')
+    //       // 提示框
+    //       // token不存在返回login页面
+    //       this.$router.push('/login')
+    //     }else this.$message.warning('进入到Home页')
+    //     // token存在进行home页面的渲染
+    //     this.$router.push('/')
+    // 判断用户token是否存在,登录进行/home的页面的渲染
+    // !token的  回到login页面
+    // 操作退出的方法添加
+  },
+  // 调用方法
+  created() {
+    this.getMenus();
+  },
+
   methods: {
-    loginout () {
+    // 使用路由守卫统一配置,获取动态左侧动态的选项路由配置
+    async getMenus() {
+      const res = await this.$http.get(`menus`);
+      console.log(res);
+      this.menus = res.data.data;
+    },
+    loginout() {
       // 1.清除session
-      sessionStorage.clear()
+      sessionStorage.clear();
       // 2.跳转
-      this.$router.push({name: 'login'})
+      this.$router.push({
+        name: "login"
+      });
       // 3.提示
-      this.$message.success('退出成功')
+      this.$message.success("退出成功");
     }
   }
-}
+};
 </script>
 
 <style>
@@ -161,5 +144,6 @@ export default {
 .menu {
   height: 100%;
 }
+
 /* // 操作完成后  新建一个用户列表页 */
 </style>

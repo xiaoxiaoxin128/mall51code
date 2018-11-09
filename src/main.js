@@ -9,8 +9,10 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
 // 导入自定义网络请求的插件去下面的使用
-import HttpTool from './pulign/http.js'
+import HttpTool from '@/pulign/http.js'
 import App from './App'
+// 导入面包屑额自定义组件
+import MyBread from '@/components/myBread'
 import router from './router'
 
 // 引入login的样式css操作
@@ -26,6 +28,8 @@ Vue.use(HttpTool)
 Vue.filter('fmtDate', function (v) {
   return moment(v).format('YYYY-MM-DD hh:mm:ss')
 })
+// 使用定义全局面包屑插件
+Vue.component(MyBread.name, MyBread)
 
 Vue.config.productionTip = false
 

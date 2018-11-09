@@ -22,39 +22,39 @@
 
 <script>
 export default {
-  data () {
+  data() {
     //  1.1 提供上面v-model的数据绑定
     return {
       formdata: {
-        username: '',
-        password: ''
+        username: "",
+        password: ""
       }
-    }
+    };
   },
   methods: {
     //   点击登录按钮触发post请求foemdata数据
     // async    aeait  执行异步的操作赋值给res直接操作
-    async handleLoginin () {
-      const res = await this.$http.post('login', this.formdata)
+    async handleLoginin() {
+      const res = await this.$http.post("login", this.formdata);
       //   console.log(res)
       //   .then(res => {
-      const { meta } = res.data
+      const { meta } = res.data;
       if (meta.status === 200) {
         //   设置获取token信息令牌,操作每次登陆时候的效验
-        const token = res.data.data.token
+        const token = res.data.data.token;
         // 将token的信息存储在session里面
-        sessionStorage.setItem('token', token)
+        sessionStorage.setItem("token", token);
         // 过去token的表示验证成功后,操作router配置跳转到home页面中
-        this.$router.push('/')
-        this.$message.success(meta.msg)
+        this.$router.push("/");
+        this.$message.success(meta.msg);
       } else {
         // 提示框
-        this.$message.warning(meta.msg)
+        this.$message.warning(meta.msg);
       }
     }
     // 判断用户输入的name是否存在输出提示框
   }
-}
+};
 </script>
 
 <style>
